@@ -1,0 +1,46 @@
+drop view SIM_project_emp ;
+drop view SIM_manager;
+
+create view SIM_project_emp as
+SELECT person_id, title, rating, type
+FROM SIM_person
+WHERE TYPE = 'project_emp' ;
+
+create or replace TRIGGER project_emp_trigger
+     INSTEAD OF insert ON SIM_project_emp
+     FOR EACH ROW
+BEGIN
+     insert into SIM_project_emp(
+        person_id,
+        type,
+        title,
+        rating)
+     VALUES (
+        :new.PERSON_ID,
+        'project_emp',
+        :new.title,
+        :new.rating) ;
+END;
+/
+
+create view  as SIM_manager
+SELECT PERSON_ID, TYPE, title, bonus 
+FROM SIM_person
+WHERE TYPE = 'manager' ;
+
+create or replace TRIGGER manager_trigger
+     INSTEAD OF insert ON SIM_manager
+     FOR EACH ROW
+BEGIN
+     insert into SIM_manager(
+        PERSON_ID,
+        TYPE,
+        title,
+        bonus)
+     VALUES (
+        :new.PERSON_ID,
+        'manager',
+        :new.title,
+        :new.bonus) ;
+END;
+/
